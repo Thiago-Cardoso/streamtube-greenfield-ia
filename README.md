@@ -83,7 +83,7 @@ docker compose exec nestjs-api npm run seed
 
 Este projeto explora o desenvolvimento greenfield guiado por IA generativa. O agente principal é o **Claude Code** (Sonnet 4.6), que atua como co-desenvolvedor em todas as fases — desde o planejamento de arquitetura até a implementação, testes e revisão de código.
 
-O fluxo segue o modelo **RAI (Retrieval-Augmented Intelligence)**: o agente busca contexto especializado sob demanda (documentação oficial, convenções do projeto, estado do banco de dados) antes de implementar cada funcionalidade, garantindo que as decisões sejam baseadas em informação atual e precisa, não apenas em conhecimento de treinamento.
+O fluxo segue o modelo **RPI (Research → Plan → Implement)**: para cada funcionalidade, o agente primeiro pesquisa o contexto técnico (documentação oficial, convenções do projeto, estado do banco), depois planeja a abordagem com critérios de aceite explícitos e só então implementa — garantindo que as decisões sejam baseadas em informação atual e precisa, não apenas em conhecimento de treinamento.
 
 ### Skills — Agentes especializados
 
@@ -163,17 +163,23 @@ memory/
 
 Isso garante que preferências e convenções aprendidas em uma sessão sejam respeitadas automaticamente em todas as sessões futuras — sem precisar repetir instruções.
 
-### Fluxo RAI por feature
+### Fluxo RPI por feature
 
-O ciclo completo para cada feature segue o padrão **RAI**:
+O ciclo completo para cada feature segue o padrão **RPI**:
 
 ```
-1. RETRIEVE   → Skills carregadas + Context7 consultado + rules ativas
+1. RESEARCH   → Skill `research` ativada: Context7 consultado para
+                documentação oficial, MCP PostgreSQL para estado do
+                banco, skills de domínio carregadas, rules ativas
        ↓
-2. AUGMENT    → Contexto enriquecido com documentação oficial e
-                convenções do projeto (sem depender de treinamento)
+2. PLAN       → Skill `plan-phase` ativada: arquitetura definida,
+                critérios de aceite especificados, dependências
+                mapeadas, abordagem validada antes de qualquer código
        ↓
-3. IMPLEMENT  → Código gerado com base no contexto recuperado
+3. IMPLEMENT  → Skill `implement-phase` ativada: código gerado
+                seguindo as convenções das rules e os padrões
+                das skills de domínio (typeorm, nestjs-best-practices,
+                testing-guide-nestjs-project)
        ↓
 4. VALIDATE   → tsc + lint + testes (unit + integration + e2e)
        ↓
