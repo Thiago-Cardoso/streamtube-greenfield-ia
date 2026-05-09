@@ -55,9 +55,9 @@ describe('validationSchema', () => {
     expect(value.PORT).toBe(3000);
   });
 
-  it('applies default DB_HOST=localhost when omitted', () => {
+  it('applies default DB_HOST=db when omitted', () => {
     const { value } = validate({ ...validEnv, DB_HOST: undefined });
-    expect(value.DB_HOST).toBe('localhost');
+    expect(value.DB_HOST).toBe('db');
   });
 
   it('applies default DB_PORT=5432 when omitted', () => {

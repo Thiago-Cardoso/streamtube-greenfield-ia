@@ -29,20 +29,14 @@ describe('databaseConfig', () => {
     });
   });
 
-  it('applies defaults when environment variables are not set', () => {
+  it('applies default host=db and port=5432 when not set', () => {
     delete process.env.DB_HOST;
     delete process.env.DB_PORT;
-    delete process.env.DB_USERNAME;
-    delete process.env.DB_PASSWORD;
-    delete process.env.DB_NAME;
 
     const config = databaseConfig();
 
-    expect(config.host).toBe('localhost');
+    expect(config.host).toBe('db');
     expect(config.port).toBe(5432);
-    expect(config.username).toBe('streamtube');
-    expect(config.password).toBe('streamtube');
-    expect(config.name).toBe('streamtube');
   });
 
   it('parses DB_PORT as a number', () => {
