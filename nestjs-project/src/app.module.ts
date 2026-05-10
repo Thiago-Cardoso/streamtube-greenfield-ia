@@ -4,14 +4,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import appConfig from './config/app.config';
+import authConfig from './config/auth.config';
 import databaseConfig from './config/database.config';
+import mailConfig from './config/mail.config';
 import { validationSchema } from './config/env.validation';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig, appConfig],
+      load: [databaseConfig, appConfig, authConfig, mailConfig],
       validationSchema,
       validationOptions: { allowUnknown: true, abortEarly: false },
     }),
@@ -29,6 +32,7 @@ import { validationSchema } from './config/env.validation';
         synchronize: false,
       }),
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

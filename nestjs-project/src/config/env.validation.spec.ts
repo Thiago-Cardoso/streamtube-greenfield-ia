@@ -8,6 +8,8 @@ interface EnvValues {
   DB_USERNAME: string;
   DB_PASSWORD: string;
   DB_NAME: string;
+  JWT_SECRET: string;
+  JWT_REFRESH_SECRET: string;
 }
 
 const validEnv: EnvValues = {
@@ -18,6 +20,8 @@ const validEnv: EnvValues = {
   DB_USERNAME: 'streamtube',
   DB_PASSWORD: 'streamtube',
   DB_NAME: 'streamtube',
+  JWT_SECRET: 'test-jwt-secret-at-least-32-chars-long',
+  JWT_REFRESH_SECRET: 'test-refresh-secret-at-least-32-chars-long',
 };
 
 function validate(env: object): { error?: Error; value: EnvValues } {
