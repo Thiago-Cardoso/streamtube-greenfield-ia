@@ -6,6 +6,7 @@ import { User } from '../users/entities/user.entity';
 import { Channel } from '../channels/entities/channel.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { VerificationToken } from './entities/verification-token.entity';
+import appConfig from '../config/app.config';
 import authConfig from '../config/auth.config';
 import mailConfig from '../config/mail.config';
 
@@ -13,7 +14,7 @@ describe('AuthModule', () => {
   it('compiles with JwtModule.registerAsync, TypeOrmModule.forFeature, UsersModule, MailModule wiring', async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({ isGlobal: true, load: [authConfig, mailConfig] }),
+        ConfigModule.forRoot({ isGlobal: true, load: [appConfig, authConfig, mailConfig] }),
         TypeOrmModule.forRoot({
           type: 'postgres',
           host: process.env.DB_HOST ?? 'db',

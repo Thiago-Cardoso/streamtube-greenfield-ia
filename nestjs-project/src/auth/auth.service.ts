@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import type { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import type { StringValue } from 'ms';
-import { IsNull, Repository } from 'typeorm';
+import { IsNull, QueryFailedError, Repository } from 'typeorm';
 import * as argon2 from 'argon2';
 import * as crypto from 'crypto';
 import authConfig from '../config/auth.config';
@@ -43,7 +43,19 @@ export class AuthService {
     }
 
     const hashedPassword = await argon2.hash(dto.password);
-    const user = await this.usersService.createUserWithChannel(dto.email, hashedPassword);
+    let user: Awaited<ReturnType<typeof this.usersService.createUserWithChannel>>;
+    try {
+      user = await this.usersService.createUserWithChannel(dto.email, hashedPassword);
+    } catch (err) {
+      if (
+        err instanceof QueryFailedError &&
+        (err as unknown as { code: string; detail?: string }).code === '23505' &&
+        (err as unknown as { code: string; detail?: string }).detail?.includes('email')
+      ) {
+        throw new EmailAlreadyExistsException();
+      }
+      throw err;
+    }
 
     await this.createVerificationToken(
       user.id,
@@ -175,6 +187,12 @@ export class AuthService {
     return { refreshToken, family, jti };
   }
 
+  private parseDurationMs(duration: string): number {
+    const units: Record<string, number> = { s: 1e3, m: 6e4, h: 36e5, d: 864e5 };
+    const match = /^(\d+)([smhd])$/.exec(duration);
+    return match ? parseInt(match[1]) * (units[match[2]] ?? 864e5) : 7 * 864e5;
+  }
+
   private async storeRefreshToken(
     userId: string,
     rawToken: string,
@@ -182,8 +200,7 @@ export class AuthService {
     _jti: string,
   ): Promise<RefreshToken> {
     const tokenHash = this.hashToken(rawToken);
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
+    const expiresAt = new Date(Date.now() + this.parseDurationMs(this.authCfg.jwtRefreshExpiration));
 
     return this.refreshTokenRepository.save(
       this.refreshTokenRepository.create({

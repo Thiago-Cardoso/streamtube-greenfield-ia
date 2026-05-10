@@ -100,7 +100,7 @@ describe('Auth (e2e)', () => {
   });
 
   describe('GET /auth/confirm-email', () => {
-    it('returns 204 and marks user as confirmed with valid token', async () => {
+    it('creates a verification token record after registration', async () => {
       await request(app.getHttpServer())
         .post('/auth/register')
         .send({ email: 'conf@example.com', password: 'password123' });
@@ -110,8 +110,6 @@ describe('Auth (e2e)', () => {
         order: { created_at: 'DESC' },
       });
 
-      // The raw token goes via email (Mailpit); we verify the endpoint behavior
-      // by checking that a record exists — integration spec verifies full confirm flow
       expect(tokenRecord).toBeDefined();
     });
 
@@ -266,20 +264,6 @@ describe('Auth (e2e)', () => {
   });
 
   describe('POST /auth/reset-password', () => {
-    const registerAndGetResetToken = async (email: string) => {
-      await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({ email, password: 'password123' });
-      await request(app.getHttpServer())
-        .post('/auth/forgot-password')
-        .send({ email });
-
-      const [token] = await dataSource.query(
-        `SELECT token_hash FROM "verification_tokens" WHERE type = 'password_reset' ORDER BY created_at DESC LIMIT 1`,
-      ) as [{ token_hash: string }];
-      return token?.token_hash;
-    };
-
     it('returns 401 INVALID_TOKEN with an invalid token', async () => {
       const res = await request(app.getHttpServer())
         .post('/auth/reset-password')

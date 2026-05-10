@@ -4,10 +4,11 @@ import { DataSource, QueryFailedError } from 'typeorm';
 import { ChannelsService } from './channels.service';
 import { Channel } from './entities/channel.entity';
 
-const buildMockManager = (overrides: Partial<{ findOne: jest.Mock; save: jest.Mock; create: jest.Mock }> = {}) => ({
+const buildMockManager = (overrides: Partial<{ findOne: jest.Mock; save: jest.Mock; create: jest.Mock; query: jest.Mock }> = {}) => ({
   findOne: jest.fn().mockResolvedValue(null),
   save: jest.fn().mockImplementation((entity: Channel) => Promise.resolve(entity)),
   create: jest.fn().mockImplementation((_entity: unknown, data: Partial<Channel>) => data as Channel),
+  query: jest.fn().mockResolvedValue(undefined),
   ...overrides,
 });
 

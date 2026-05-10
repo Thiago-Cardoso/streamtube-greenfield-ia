@@ -29,8 +29,10 @@ export class ChannelsService {
         }
 
         try {
+          await manager.query('SAVEPOINT nickname_attempt');
           return await manager.save(manager.create(Channel, { name: baseNickname, nickname, user_id: userId }));
         } catch (err) {
+          await manager.query('ROLLBACK TO SAVEPOINT nickname_attempt');
           if (
             err instanceof QueryFailedError &&
             (err as unknown as { code: string; detail?: string }).code === '23505' &&

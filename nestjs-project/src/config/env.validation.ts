@@ -19,4 +19,5 @@ export const validationSchema = Joi.object({
   MAIL_HOST: Joi.string().default('mailpit'),
   MAIL_PORT: Joi.number().default(1025),
   MAIL_FROM: Joi.string().default('"StreamTube" <noreply@streamtube.com>'),
+  APP_URL: Joi.string().uri().default('http://localhost:3003'),
 });
