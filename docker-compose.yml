@@ -34,11 +34,11 @@ services:
       - ./nestjs-project:/home/node/app
       - nestjs_modules:/home/node/app/node_modules
     ports:
-      - "3000:3000"
+      - "3100:3000"
     environment:
       NODE_ENV: development
       PORT: 3000
-      APP_URL: http://localhost:3003
+      APP_URL: http://localhost:3004
       DB_HOST: db
       DB_PORT: 5432
       DB_USERNAME: streamtube
@@ -68,8 +68,8 @@ services:
       - "3004:3003"
     environment:
       NODE_ENV: development
-      # Browser-side: backend is reachable on the host via localhost:3000
-      NEXT_PUBLIC_API_URL: http://localhost:3000
+      # Browser-side: backend is reachable on the host via localhost:3100
+      NEXT_PUBLIC_API_URL: http://localhost:3100
       # Server-side (Route Handlers): backend is reachable via Docker service name
       BACKEND_URL: http://nestjs-api:3000
     command: sh -c "npm ci && npm run dev"
