@@ -20,6 +20,7 @@ describe('appConfig', () => {
     expect(config).toEqual({
       port: 4000,
       nodeEnv: 'production',
+      appUrl: 'http://localhost:3003',
     });
   });
 

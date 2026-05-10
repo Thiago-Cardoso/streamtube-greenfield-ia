@@ -1,0 +1,100 @@
+import { ArgumentsHost } from '@nestjs/common';
+import { DomainExceptionFilter } from './domain-exception.filter';
+import {
+  EmailAlreadyExistsException,
+  InvalidCredentialsException,
+  EmailNotConfirmedException,
+  InvalidTokenException,
+  TokenExpiredException,
+  TokenReuseDetectedException,
+} from '../exceptions/domain.exception';
+
+describe('DomainExceptionFilter', () => {
+  let filter: DomainExceptionFilter;
+  let mockJson: jest.Mock;
+  let mockStatus: jest.Mock;
+  let mockHost: ArgumentsHost;
+
+  beforeEach(() => {
+    filter = new DomainExceptionFilter();
+    mockJson = jest.fn();
+    mockStatus = jest.fn().mockReturnValue({ json: mockJson });
+
+    mockHost = {
+      switchToHttp: () => ({
+        getResponse: () => ({ status: mockStatus }),
+      }),
+      getArgs: () => [],
+      getArgByIndex: () => null,
+      switchToRpc: () => ({}) as never,
+      switchToWs: () => ({}) as never,
+      getType: () => 'http',
+    } as unknown as ArgumentsHost;
+  });
+
+  it('maps EmailAlreadyExistsException to 409 EMAIL_ALREADY_EXISTS', () => {
+    filter.catch(new EmailAlreadyExistsException(), mockHost);
+
+    expect(mockStatus).toHaveBeenCalledWith(409);
+    expect(mockJson).toHaveBeenCalledWith({
+      statusCode: 409,
+      error: 'EMAIL_ALREADY_EXISTS',
+      message: 'Email is already registered',
+    });
+  });
+
+  it('maps InvalidCredentialsException to 401 INVALID_CREDENTIALS', () => {
+    filter.catch(new InvalidCredentialsException(), mockHost);
+
+    expect(mockStatus).toHaveBeenCalledWith(401);
+    expect(mockJson).toHaveBeenCalledWith({
+      statusCode: 401,
+      error: 'INVALID_CREDENTIALS',
+      message: 'Invalid email or password',
+    });
+  });
+
+  it('maps EmailNotConfirmedException to 403 EMAIL_NOT_CONFIRMED', () => {
+    filter.catch(new EmailNotConfirmedException(), mockHost);
+
+    expect(mockStatus).toHaveBeenCalledWith(403);
+    expect(mockJson).toHaveBeenCalledWith({
+      statusCode: 403,
+      error: 'EMAIL_NOT_CONFIRMED',
+      message: 'Email not confirmed',
+    });
+  });
+
+  it('maps InvalidTokenException to 401 INVALID_TOKEN', () => {
+    filter.catch(new InvalidTokenException(), mockHost);
+
+    expect(mockStatus).toHaveBeenCalledWith(401);
+    expect(mockJson).toHaveBeenCalledWith({
+      statusCode: 401,
+      error: 'INVALID_TOKEN',
+      message: 'Invalid or already used token',
+    });
+  });
+
+  it('maps TokenExpiredException to 401 TOKEN_EXPIRED', () => {
+    filter.catch(new TokenExpiredException(), mockHost);
+
+    expect(mockStatus).toHaveBeenCalledWith(401);
+    expect(mockJson).toHaveBeenCalledWith({
+      statusCode: 401,
+      error: 'TOKEN_EXPIRED',
+      message: 'Token has expired',
+    });
+  });
+
+  it('maps TokenReuseDetectedException to 401 TOKEN_REUSE_DETECTED', () => {
+    filter.catch(new TokenReuseDetectedException(), mockHost);
+
+    expect(mockStatus).toHaveBeenCalledWith(401);
+    expect(mockJson).toHaveBeenCalledWith({
+      statusCode: 401,
+      error: 'TOKEN_REUSE_DETECTED',
+      message: 'Token reuse detected — all sessions revoked',
+    });
+  });
+});
