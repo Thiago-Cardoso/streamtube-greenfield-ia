@@ -16,12 +16,19 @@ export async function apiFetch<T>(
   options: RequestInit = {},
 ): Promise<T> {
   const { accessToken } = getAuthState();
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
+
+  // Same-origin Next.js Route Handlers (/api/*) must not be prefixed with the
+  // backend base URL; all other paths are backend calls.
+  const baseUrl = path.startsWith('/api/') ? '' : (process.env.NEXT_PUBLIC_API_URL ?? '');
 
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   };
+
+  // Only set Content-Type when a body is present — avoids CORS preflight on GETs.
+  if (options.body !== undefined && options.body !== null) {
+    headers['Content-Type'] = headers['Content-Type'] ?? 'application/json';
+  }
 
   if (accessToken) {
     headers['Authorization'] = `Bearer ${accessToken}`;
