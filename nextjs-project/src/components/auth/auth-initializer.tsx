@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { useAuthStore } from '@/store/auth.store';
+import { useAuthStore, getAuthState } from '@/store/auth.store';
 
 interface JwtPayload {
   sub: string;
@@ -10,10 +10,11 @@ interface JwtPayload {
 }
 
 export function AuthInitializer() {
-  const { accessToken, setAuth, clearAuth } = useAuthStore();
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const clearAuth = useAuthStore((s) => s.clearAuth);
 
   useEffect(() => {
-    if (accessToken !== null) return;
+    if (getAuthState().accessToken !== null) return;
 
     fetch('/api/auth/refresh', { method: 'POST' })
       .then((res) => {
@@ -25,9 +26,12 @@ export function AuthInitializer() {
         setAuth({ id: payload.sub, email: payload.email }, access_token);
       })
       .catch(() => {
-        clearAuth();
+        // Guard against race with a concurrent login: only clear if still unauthenticated.
+        if (getAuthState().accessToken === null) {
+          clearAuth();
+        }
       });
-  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
+  }, [setAuth, clearAuth]);
 
   return null;
 }
