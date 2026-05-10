@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useAuthStore } from './auth.store';
+import { useAuthStore, getAuthState } from './auth.store';
 
 beforeEach(() => {
   useAuthStore.setState({ user: null, accessToken: null });
@@ -42,7 +42,6 @@ describe('auth store', () => {
 
   it('getAuthState returns current state outside React', () => {
     useAuthStore.setState({ accessToken: 'direct-tok', user: null });
-    // getAuthState is an alias for useAuthStore.getState
-    expect(useAuthStore.getState().accessToken).toBe('direct-tok');
+    expect(getAuthState().accessToken).toBe('direct-tok');
   });
 });
