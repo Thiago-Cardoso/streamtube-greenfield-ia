@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -113,12 +114,9 @@ export function LoginForm() {
               </p>
             )}
             {errors.password?.type === 'EMAIL_NOT_CONFIRMED' && (
-              <a
-                href="/auth/resend-confirmation"
-                className="text-sm underline"
-              >
+              <Link href="/auth/resend-confirmation" className="text-sm underline">
                 Resend confirmation email
-              </a>
+              </Link>
             )}
           </div>
 
