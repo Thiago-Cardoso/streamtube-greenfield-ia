@@ -1,0 +1,80 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: streamtube
+      POSTGRES_PASSWORD: streamtube
+      POSTGRES_DB: streamtube
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U streamtube"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "1026:1025"   # SMTP
+      - "8026:8025"   # Web UI → http://localhost:8026
+
+  nestjs-api:
+    build:
+      context: ./nestjs-project
+      dockerfile: Dockerfile.dev
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    volumes:
+      - ./nestjs-project:/home/node/app
+      - nestjs_modules:/home/node/app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      APP_URL: http://localhost:3003
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: streamtube
+      DB_PASSWORD: streamtube
+      DB_NAME: streamtube
+      JWT_SECRET: change-me-in-production
+      JWT_REFRESH_SECRET: change-me-refresh-in-production
+      JWT_ACCESS_EXPIRATION: 15m
+      JWT_REFRESH_EXPIRATION: 7d
+      CONFIRMATION_TOKEN_EXPIRATION_HOURS: 1
+      PASSWORD_RESET_TOKEN_EXPIRATION_HOURS: 1
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_FROM: "StreamTube <noreply@streamtube.com>"
+    command: sh -c "npm ci && npm run start:dev"
+
+  nextjs:
+    build:
+      context: ./nextjs-project
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - nestjs-api
+    volumes:
+      - ./nextjs-project:/home/node/app
+      - nextjs_modules:/home/node/app/node_modules
+    ports:
+      - "3004:3003"
+    environment:
+      NODE_ENV: development
+      # Browser-side: backend is reachable on the host via localhost:3000
+      NEXT_PUBLIC_API_URL: http://localhost:3000
+      # Server-side (Route Handlers): backend is reachable via Docker service name
+      BACKEND_URL: http://nestjs-api:3000
+    command: sh -c "npm ci && npm run dev"
+
+volumes:
+  db_data:
+  nestjs_modules:
+  nextjs_modules:
