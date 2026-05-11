@@ -50,3 +50,27 @@ export class TokenReuseDetectedException extends DomainException {
     super('Token reuse detected — all sessions revoked');
   }
 }
+
+export class VideoNotFoundException extends DomainException {
+  readonly errorCode = 'VIDEO_NOT_FOUND';
+  readonly httpStatus = 404;
+  constructor() {
+    super('Video not found');
+  }
+}
+
+export class VideoInvalidMimeTypeException extends DomainException {
+  readonly errorCode = 'INVALID_MIME_TYPE';
+  readonly httpStatus = 400;
+  constructor() {
+    super('File type not supported. Accepted formats: mp4, mov, webm, avi');
+  }
+}
+
+export class VideoUploadFailedException extends DomainException {
+  readonly errorCode = 'VIDEO_UPLOAD_FAILED';
+  readonly httpStatus = 500;
+  constructor() {
+    super('Video upload failed');
+  }
+}

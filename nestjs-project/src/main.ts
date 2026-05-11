@@ -12,6 +12,10 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new DomainExceptionFilter(), new ValidationExceptionFilter());
   const configService = app.get(ConfigService);
+  app.enableCors({
+    origin: configService.get<string>('app.appUrl') ?? 'http://localhost:3004',
+    credentials: true,
+  });
   const port = configService.get<number>('app.port') ?? 3000;
   await app.listen(port);
 }

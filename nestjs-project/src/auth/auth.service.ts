@@ -15,7 +15,6 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import {
   EmailAlreadyExistsException,
-  EmailNotConfirmedException,
   InvalidCredentialsException,
   InvalidTokenException,
   TokenExpiredException,
@@ -87,10 +86,6 @@ export class AuthService {
     }
     if (!isValid) {
       throw new InvalidCredentialsException();
-    }
-
-    if (!user.is_confirmed) {
-      throw new EmailNotConfirmedException();
     }
 
     const accessToken = await this.generateAccessToken(user.id, user.email);

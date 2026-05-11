@@ -7,14 +7,19 @@ import appConfig from './config/app.config';
 import authConfig from './config/auth.config';
 import databaseConfig from './config/database.config';
 import mailConfig from './config/mail.config';
+import storageConfig from './config/storage.config';
+import queueConfig from './config/queue.config';
 import { validationSchema } from './config/env.validation';
 import { AuthModule } from './auth/auth.module';
+import { StorageModule } from './storage/storage.module';
+import { QueueModule } from './queue/queue.module';
+import { VideosModule } from './videos/videos.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig, appConfig, authConfig, mailConfig],
+      load: [databaseConfig, appConfig, authConfig, mailConfig, storageConfig, queueConfig],
       validationSchema,
       validationOptions: { allowUnknown: true, abortEarly: false },
     }),
@@ -33,6 +38,9 @@ import { AuthModule } from './auth/auth.module';
       }),
     }),
     AuthModule,
+    StorageModule,
+    QueueModule,
+    VideosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

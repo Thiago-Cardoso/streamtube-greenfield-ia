@@ -11,7 +11,6 @@ import { VerificationToken, VerificationTokenType } from './entities/verificatio
 import { RegisterDto } from './dto/register.dto';
 import {
   EmailAlreadyExistsException,
-  EmailNotConfirmedException,
   InvalidCredentialsException,
   InvalidTokenException,
   TokenExpiredException,
@@ -190,24 +189,6 @@ describe('AuthService — login', () => {
     ).rejects.toThrow(InvalidCredentialsException);
   });
 
-  it('throws EmailNotConfirmedException for unconfirmed user', async () => {
-    // real argon2 hash of 'anypassword' so verify passes and we reach the is_confirmed check
-    const validHash = '$argon2id$v=19$m=65536,t=3,p=4$jJp4sCksy6elvoYgC0kM+g$HcB6BEDChOBbqTQ3hzYCtfwCz/9jOurNkkP1crw8hhk';
-    const { authService } = await buildTestModule({
-      usersService: {
-        findByEmail: jest.fn().mockResolvedValue({
-          id: 'u1',
-          email: 'u@e.com',
-          password: validHash,
-          is_confirmed: false,
-        }),
-      },
-    });
-
-    await expect(
-      authService.login({ email: 'u@e.com', password: 'anypassword' }),
-    ).rejects.toThrow(EmailNotConfirmedException);
-  });
 });
 
 describe('AuthService — confirm', () => {

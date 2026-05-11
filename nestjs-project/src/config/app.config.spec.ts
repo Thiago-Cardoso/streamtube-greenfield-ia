@@ -14,6 +14,7 @@ describe('appConfig', () => {
   it('reads values from environment variables', () => {
     process.env.PORT = '4000';
     process.env.NODE_ENV = 'production';
+    process.env.APP_URL = 'http://localhost:3003';
 
     const config = appConfig();
 

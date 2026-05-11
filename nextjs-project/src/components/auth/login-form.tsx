@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -57,16 +56,8 @@ export function LoginForm() {
       router.push('/');
     },
     onError: (err) => {
-      if (err instanceof ApiError) {
-        if (err.error === 'INVALID_CREDENTIALS') {
-          setError('password', { message: 'Invalid email or password' });
-        } else if (err.error === 'EMAIL_NOT_CONFIRMED') {
-          setError('password', {
-            message:
-              'Email not confirmed. Check your inbox or resend the confirmation email.',
-            type: 'EMAIL_NOT_CONFIRMED',
-          });
-        }
+      if (err instanceof ApiError && err.error === 'INVALID_CREDENTIALS') {
+        setError('password', { message: 'Invalid email or password' });
       }
     },
   });
@@ -112,11 +103,6 @@ export function LoginForm() {
               <p className="text-sm text-destructive" role="alert">
                 {errors.password.message}
               </p>
-            )}
-            {errors.password?.type === 'EMAIL_NOT_CONFIRMED' && (
-              <Link href="/auth/resend-confirmation" className="text-sm underline">
-                Resend confirmation email
-              </Link>
             )}
           </div>
 
