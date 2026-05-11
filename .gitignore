@@ -47,3 +47,4 @@ coverage/
 
 # Claude Code session memory
 memory/
+.claude/skills/playwright-cli/
