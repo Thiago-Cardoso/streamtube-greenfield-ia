@@ -4,6 +4,7 @@ import type { User } from '@/types/auth';
 interface AuthStore {
   user: User | null;
   accessToken: string | null;
+  isInitialized: boolean;
   setAuth: (user: User, token: string) => void;
   clearAuth: () => void;
   setAccessToken: (token: string) => void;
@@ -12,8 +13,9 @@ interface AuthStore {
 export const useAuthStore = create<AuthStore>()((set) => ({
   user: null,
   accessToken: null,
-  setAuth: (user, token) => set({ user, accessToken: token }),
-  clearAuth: () => set({ user: null, accessToken: null }),
+  isInitialized: false,
+  setAuth: (user, token) => set({ user, accessToken: token, isInitialized: true }),
+  clearAuth: () => set({ user: null, accessToken: null, isInitialized: true }),
   setAccessToken: (token) => set({ accessToken: token }),
 }));
 

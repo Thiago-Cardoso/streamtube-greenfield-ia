@@ -43,3 +43,4 @@ e2e/test-state.json
 .playwright-cli/
 test-results/
 test-state.json
+*.png
