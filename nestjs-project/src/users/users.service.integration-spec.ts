@@ -40,6 +40,7 @@ describe('UsersService (integration)', () => {
   });
 
   beforeEach(async () => {
+    await dataSource.query('DELETE FROM "videos"');
     await dataSource.query('DELETE FROM "refresh_tokens"');
     await dataSource.query('DELETE FROM "verification_tokens"');
     await dataSource.query('DELETE FROM "channels"');
