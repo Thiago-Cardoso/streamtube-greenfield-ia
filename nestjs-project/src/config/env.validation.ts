@@ -20,4 +20,15 @@ export const validationSchema = Joi.object({
   MAIL_PORT: Joi.number().default(1025),
   MAIL_FROM: Joi.string().default('"StreamTube" <noreply@streamtube.com>'),
   APP_URL: Joi.string().uri().default('http://localhost:3003'),
+  // MinIO / Object Storage
+  MINIO_ENDPOINT: Joi.string().default('minio'),
+  MINIO_PORT: Joi.number().default(9000),
+  MINIO_ACCESS_KEY: Joi.string().required(),
+  MINIO_SECRET_KEY: Joi.string().required(),
+  MINIO_USE_SSL: Joi.string().valid('true', 'false').default('false'),
+  MINIO_BUCKET_VIDEOS: Joi.string().default('videos'),
+  MINIO_BUCKET_THUMBNAILS: Joi.string().default('thumbnails'),
+  // Redis / BullMQ
+  REDIS_HOST: Joi.string().default('redis'),
+  REDIS_PORT: Joi.number().default(6379),
 });

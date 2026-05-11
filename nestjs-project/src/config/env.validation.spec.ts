@@ -10,6 +10,8 @@ interface EnvValues {
   DB_NAME: string;
   JWT_SECRET: string;
   JWT_REFRESH_SECRET: string;
+  MINIO_ACCESS_KEY: string;
+  MINIO_SECRET_KEY: string;
 }
 
 const validEnv: EnvValues = {
@@ -22,6 +24,8 @@ const validEnv: EnvValues = {
   DB_NAME: 'streamtube',
   JWT_SECRET: 'test-jwt-secret-at-least-32-chars-long',
   JWT_REFRESH_SECRET: 'test-refresh-secret-at-least-32-chars-long',
+  MINIO_ACCESS_KEY: 'test-access-key',
+  MINIO_SECRET_KEY: 'test-secret-key',
 };
 
 function validate(env: object): { error?: Error; value: EnvValues } {
